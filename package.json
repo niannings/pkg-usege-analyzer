@@ -1,0 +1,19 @@
+{
+  "name": "pkg-usege-analyzer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "demo": "ts-node demo.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ts-morph": "^20.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "@types/node": "20.8.10"
+  }
+}
