@@ -2,11 +2,10 @@ import { Project, ProjectOptions } from 'ts-morph';
 // import { formatPath } from './utils/file';
 import { getPkgsUsedInfoTree } from './utils/genPkgUsedInfoTree';
 
-interface AnalyzePkgUsedInfoInEveryPageParams extends Pick<ProjectOptions, 'tsConfigFilePath'> {
-    /** 要分析的包名称 */
-    packageNames: string[];
-    /** 要分析的每个页面的入口文件 */
-    pages: string[];
+interface AnalyzePkgUsedInfoInEveryPageParams
+  extends Pick<ProjectOptions, 'tsConfigFilePath'> {
+  /** 要分析的包名称 */
+  packageNames: string[];
 }
 
 /**
@@ -18,12 +17,15 @@ interface AnalyzePkgUsedInfoInEveryPageParams extends Pick<ProjectOptions, 'tsCo
  * @param {string} params.pages - 要分析的每个页面的入口文件。
  * @return {void} 该函数不返回值。
  */
-export function analyzePkgUsedInfoInEveryPage({ tsConfigFilePath, packageNames, pages }: AnalyzePkgUsedInfoInEveryPageParams) {
-    const project = new Project({
-        tsConfigFilePath,
-    });
-    const sourceFiles = project.getSourceFiles();
-    const thePkgUsedInfoTree = getPkgsUsedInfoTree(packageNames, sourceFiles);
+export function analyzePkgUsedInfoInEveryPage({
+  tsConfigFilePath,
+  packageNames,
+}: AnalyzePkgUsedInfoInEveryPageParams) {
+  const project = new Project({
+    tsConfigFilePath,
+  });
+  const sourceFiles = project.getSourceFiles();
+  const thePkgUsedInfoTree = getPkgsUsedInfoTree(packageNames, sourceFiles);
 
-    console.log(`引用了${packageNames.join('、')}的文件信息：`, JSON.stringify(thePkgUsedInfoTree, null, 2));
+  return thePkgUsedInfoTree;
 }

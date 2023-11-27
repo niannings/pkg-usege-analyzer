@@ -1,7 +1,21 @@
-import { analyzePkgUsedInfoInEveryPage } from ".";
+import path from 'path';
+import mock from './mock.json';
+import { computeImportVarsUsedCountOfPages } from './utils/statistics';
 
-analyzePkgUsedInfoInEveryPage({
-    tsConfigFilePath: '../../tsconfig.json',
-    packageNames: ['antd'],
-    pageDir: '../../src/pages',
-});
+// const log = computeImportVarsUsedCountOfLeafs(
+//   analyzePkgUsedInfoInEveryPage({
+//     tsConfigFilePath: '../../tsconfig.json',
+//     packageNames: ['antd'],
+//   }),
+// );
+
+// console.log(log);
+
+console.log(
+  computeImportVarsUsedCountOfPages(
+    mock,
+    path.resolve(__dirname, '../../../src/pages'),
+  ),
+);
+
+// const log = computeImportVarsUsedCountOfLeafs();
