@@ -1,21 +1,35 @@
+import fs from 'fs';
 import path from 'path';
-import mock from './mock.json';
-import { computeImportVarsUsedCountOfPages } from './utils/statistics';
+import {
+  computeImportVarsUsedCountOfLeafs,
+  computeImportVarsUsedCountOfPages,
+} from './utils/statistics';
 
-// const log = computeImportVarsUsedCountOfLeafs(
-//   analyzePkgUsedInfoInEveryPage({
-//     tsConfigFilePath: '../../tsconfig.json',
-//     packageNames: ['antd'],
-//   }),
-// );
+// const log = analyzePkgUsedInfoInEveryPage({
+//   tsConfigFilePath: '../../tsconfig.json',
+//   packageNames: ['antd'],
+// });
 
-// console.log(log);
+const log = require('./log.json');
 
-console.log(
-  computeImportVarsUsedCountOfPages(
-    mock,
-    path.resolve(__dirname, '../../../src/pages'),
-  ),
+fs.writeFileSync(
+  path.join(__dirname, 'log.json'),
+  JSON.stringify(log, null, 2),
 );
 
-// const log = computeImportVarsUsedCountOfLeafs();
+const usage = computeImportVarsUsedCountOfLeafs(log[0].references);
+
+fs.writeFileSync(
+  path.join(__dirname, 'usage.json'),
+  JSON.stringify(usage, null, 2),
+);
+
+const usageOfPages = computeImportVarsUsedCountOfPages(
+  log[0].references,
+  path.resolve(__dirname, '../../../src/pages'),
+);
+
+fs.writeFileSync(
+  path.join(__dirname, 'usageOfPages.json'),
+  JSON.stringify(usageOfPages, null, 2),
+);

@@ -1,0 +1,15 @@
+{
+  "../../../../src/pages/Access": {
+    "Button": 1
+  },
+  "../../../../src/pages/Home": {},
+  "../../../../src/pages/Table": {
+    "UpdateForm": 1,
+    "Modal": 2,
+    "CreateForm": 1,
+    "Button": 3,
+    "Divider": 3,
+    "Drawer": 1,
+    "message": 12
+  }
+}

@@ -34,24 +34,22 @@ export function computeImportVarsUsedCountOfLeafs(
 
 /** 通过路径，计算每个importVarName的使用总次数 */
 export function computeImportVarsUsedCountByPaths(
-  tree: PackageUsedInfoTreeNode[],
+  paths: PackageUsedInfoTreeNode[],
 ) {
-  let log: CountInfoLog = {};
+  const stack = [...paths];
+  const log: CountInfoLog = {};
 
-  for (const node of tree) {
-    let prevLog: CountInfoLog = {};
+  while (stack.length) {
+    const node = stack.pop();
 
     if (node.exportsWhoUseThisPkg) {
       for (const item of node.exportsWhoUseThisPkg) {
         for (const el of item.importVarNames) {
-          log[el.name] =
-            (log[el.name] || 0) +
-            (prevLog[item.exportVarName] || 1) * el.usedCount;
+          console.log(el.name);
+          log[el.name] = (log[item.exportVarName] || 1) * el.usedCount;
         }
       }
     }
-
-    prevLog = log;
   }
 
   return log;
@@ -61,23 +59,39 @@ function getUsedInfoTreePathOfTarget(
   tree: PackageUsedInfoTreeNode[],
   isTarget: (cur: PackageUsedInfoTreeNode) => boolean,
 ) {
-  const path: PackageUsedInfoTreeNode[] = [];
+  const stack = [...tree];
+  const paths: PackageUsedInfoTreeNode[][] = [];
+  let childLens = 0;
+  let i = 0;
 
-  for (const node of tree) {
-    path.push(node);
+  while (stack.length) {
+    const node = stack.pop();
 
-    if (isTarget(node)) {
-      return path;
+    childLens = childLens <= 0 ? 0 : childLens - 1;
+
+    if (!paths[i]) {
+      paths[i] = [];
     }
 
-    if (node.references?.length) {
-      path.push(...getUsedInfoTreePathOfTarget(node.references, isTarget));
+    paths[i].push(node);
+
+    if (isTarget(node)) {
+      i++;
+    } else if (node.references?.length) {
+      childLens += node.references.length;
+      stack.push(...node.references);
     } else {
-      path.pop();
+      paths[i].pop();
+
+      if (childLens === 0) {
+        paths.pop();
+      }
     }
   }
 
-  return path;
+  const last = paths[paths.length - 1];
+
+  return last && isTarget(last[last.length - 1]) ? paths : paths.slice(0, -1);
 }
 
 export function computeImportVarsUsedCountOfPages(
@@ -92,13 +106,19 @@ export function computeImportVarsUsedCountOfPages(
     .map((p) => formatPath(`${dirname}/${p}`));
 
   pagedirs.forEach((p) => {
-    const treePath = getUsedInfoTreePathOfTarget(tree, (node) => {
+    const treePaths = getUsedInfoTreePathOfTarget(tree, (node) => {
       return node.key === `${p}/index.tsx` || node.key === `${p}/index.ts`;
     });
 
-    const log = computeImportVarsUsedCountByPaths(treePath);
+    result[p] = treePaths.reduce<CountInfoLog>((acc, treePath) => {
+      const log = computeImportVarsUsedCountByPaths(treePath);
 
-    result[p] = log;
+      for (const k of Object.keys(log)) {
+        acc[k] = (acc[k] || 0) + log[k];
+      }
+
+      return acc;
+    }, {});
   });
 
   return result;
